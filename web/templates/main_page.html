@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html style="font-size: 16px;" lang="ru">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="keywords"
+          content="Переводи интересные статьи и получай рекомендации​!, Введите текст, Или добавьте файл в формате txt/pdf">
+    <meta name="description" content="">
+    <title>Перевод и рекомендации статей</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/nicepage.css')}}" media="screen">
+    <link rel="stylesheet" href="{{ url_for('static', path='/main_page.css')}}" media="screen">
+    <script class="u-script" type="text/javascript" src="{{ url_for('static', path='/jquery.js')}}" defer=""></script>
+    <script class="u-script" type="text/javascript" src="{{ url_for('static', path='/nicepage.js')}}" defer=""></script>
+    <meta name="generator" content="Nicepage 5.15.1, nicepage.com">
+    <link id="u-theme-google-font" rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Open+Sans:300,300i,400,400i,500,500i,600,600i,700,700i,800,800i">
+
+
+    <script type="application/ld+json">{
+        "@context": "http://schema.org",
+        "@type": "Organization",
+        "name": "",
+        "logo": "images/depositphotos_88965270-stock-illustration-education-academic-graduation-cap-and.jpg"
+    }</script>
+    <meta name="theme-color" content="#478ac9">
+    <meta property="og:title" content="Главная">
+    <meta property="og:type" content="website">
+    <meta data-intl-tel-input-cdn-path="intlTelInput/">
+</head>
+<body class="u-body u-xl-mode" data-lang="ru">
+<header class="u-clearfix u-header u-header" id="sec-f4d5">
+    <div class="u-clearfix u-sheet u-valign-middle u-sheet-1">
+        <a href="https://nicepage.com" class="u-image u-logo u-image-1" data-image-width="600" data-image-height="600">
+            <img src="{{ url_for('static', path='/images/depositphotos_88965270-stock-illustration-education-academic-graduation-cap-and.jpg')}}"
+                 class="u-logo-image u-logo-image-1">
+        </a>
+    </div>
+</header>
+<section class="u-align-center u-clearfix u-grey-5 u-section-1" id="sec-a68e">
+    <div class="u-clearfix u-sheet u-sheet-1">
+        <h1 class="u-text u-text-default u-text-1">Переводи интересные статьи и получай рекомендации​!</h1>
+        <p class="u-text u-text-2">Необходимо быстро перевести свежую статью с английского языка на русский? Или вам
+            понравилась прочитанная статья и вы хотели бы почитать больше по данной тематике, но нет времени на поиск?
+            Данный сервис может решить эти вопросы, просто добавьте текст в форматах txt или pdf и выберите
+            необходимое действие!</p>
+    </div>
+</section>
+<section class="u-align-center u-clearfix u-section-1" id="sec-6b4d">
+    <div class="u-clearfix u-sheet u-sheet-1">
+        <h2 class="u-text u-text-default u-text-2">Добавьте файл в формате txt/pdf</h2>
+        <form action='/upload-file' enctype='multipart/form-data' method='post'>
+            <input name='files' type='file' multiple>
+        </form>
+        <div style="display: flex; justify-content: center; margin-top: 20px; padding: 50px;">
+          <button style="padding: 10px; margin: 10px" formaction="/translate" type="submit">Перевести</button>
+            <button style="padding: 10px; margin: 10px" formaction="/get-recommendation" type="submit">Получить рекомендации</button>
+        </div>
+
+    </div>
+</section>
+
+
+<footer class="u-align-center u-clearfix u-footer u-grey-80 u-footer" id="sec-98f4">
+    <div class="u-clearfix u-sheet u-sheet-1">
+        <p class="u-small-text u-text u-text-variant u-text-1">Copyright Alexandra Gridneva</p>
+    </div>
+</footer>
+</body>
+</html>
