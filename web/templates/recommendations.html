@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Рекомендации{% endblock %}
+{% block content %}
+<div style="justify-content: center; margin: 30px">
+    {% for recom, link in recommendations.items() %}
+    <div style="display: flex; align-content: center;">
+        <p>{{ recom }}</p>
+        <p>{{ link }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

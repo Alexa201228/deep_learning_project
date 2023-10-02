@@ -1,7 +1,9 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, UploadFile, File
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
+
+import services
 
 app = FastAPI()
 
@@ -13,3 +15,27 @@ templates = Jinja2Templates(directory="templates")
 @app.get("/", response_class=HTMLResponse)
 async def main_page(request: Request):
     return templates.TemplateResponse("main_page.html", {"request": request})
+
+
+@app.post("/translate")
+async def translate_user_text(request: Request, uploaded_file: UploadFile = File(...)):
+    """
+
+    :param request:
+    :param uploaded_file:
+    :return:
+    """
+    translation = await services.get_text_translation(uploaded_file.file.read())
+    return templates.TemplateResponse("translation.html", {"request": request, "translation": translation})
+
+
+@app.post("/get-recommendation")
+async def get_recommendation(request: Request, uploaded_file: UploadFile = File(...)):
+    """
+
+    :param request:
+    :param uploaded_file:
+    :return:
+    """
+    recommendations = await services.get_recommendations_from_content(uploaded_file.file.read())
+    return templates.TemplateResponse("recommendations.html", {"request": request, "recommendations": recommendations})

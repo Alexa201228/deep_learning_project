@@ -5,18 +5,24 @@ import time
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torch.utils.data import DataLoader, random_split
-from torch import nn
 from sklearn.model_selection import train_test_split
 from torchtext.data.functional import to_map_style_dataset
 
-from utils import label_mapper
+from classification_model_class import TextClassificationModel
+from utils import label_mapper, preprocess_data
 
 
 BEST_MODEL_PATH = "./models/best_classification_model.pt"
+TRAIN_DATA_PATH = "./data/train/scitechdaily.csv"
+TEST_DATA_PATH = "./data/test/scitechdaily_test.csv"
+
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-news_data = pd.read_csv("./data/train/scitechdaily.csv")
+
+preprocess_data(TRAIN_DATA_PATH)
+news_data = pd.read_csv(TRAIN_DATA_PATH)
+
 
 def collate_batch(batch):
     label_list, text_list, offsets = [], [], [0]
@@ -63,27 +69,6 @@ text_pipeline = lambda x: vocab(tokenizer(x))
 label_pipeline = lambda x: labels_dict.get(x, -1)
 
 
-class TextClassificationModel(nn.Module):
-    """
-    Text classification model class
-    """
-    def __init__(self, vocab_size, embed_dim, num_class):
-        super(TextClassificationModel, self).__init__()
-        self.embedding = nn.EmbeddingBag(vocab_size, embed_dim, sparse=False)
-        self.fc = nn.Linear(embed_dim, num_class)
-        self.init_weights()
-
-    def init_weights(self):
-        initrange = 0.5
-        self.embedding.weight.data.uniform_(-initrange, initrange)
-        self.fc.weight.data.uniform_(-initrange, initrange)
-        self.fc.bias.data.zero_()
-
-    def forward(self, text, offsets):
-        embedded = self.embedding(text, offsets)
-        return self.fc(embedded)
-
-
 num_class = len(news_data["category_tag"].unique())
 vocab_size = len(vocab)
 emsize = 64
@@ -99,7 +84,6 @@ def train(dataloader):
     model.train()
     total_acc, total_count = 0, 0
     log_interval = 500
-    start_time = time.time()
 
     for idx, (label, text, offsets) in enumerate(dataloader):
         optimizer.zero_grad()
@@ -111,7 +95,6 @@ def train(dataloader):
         total_acc += (predicted_label.argmax(1) == label).sum().item()
         total_count += label.size(0)
         if idx % log_interval == 0 and idx > 0:
-            elapsed = time.time() - start_time
             print(
                 "| epoch {:3d} | {:5d}/{:5d} batches "
                 "| accuracy {:8.3f}".format(
@@ -119,7 +102,6 @@ def train(dataloader):
                 )
             )
             total_acc, total_count = 0, 0
-            start_time = time.time()
 
 
 def evaluate(dataloader):
@@ -129,7 +111,6 @@ def evaluate(dataloader):
     with torch.no_grad():
         for idx, (label, text, offsets) in enumerate(dataloader):
             predicted_label = model(text, offsets)
-            loss = criterion(predicted_label, label)
             total_acc += (predicted_label.argmax(1) == label).sum().item()
             total_count += label.size(0)
     return total_acc / total_count
@@ -199,10 +180,11 @@ def predict(text, text_pipeline):
         return output.argmax(1).item() + 1
 
 
-actual_test_data = pd.read_csv("./data/test/scitechdaily_test.csv")
+preprocess_data(TEST_DATA_PATH)
+actual_test_data = pd.read_csv(TEST_DATA_PATH)
 
 sample = actual_test_data.sample(n=1)
-ex_text_str = sample["article_content"].item()
+ex_text_str = sample["article_content_preprocessed"].item()
 actual_label = sample["category_tag"].item()
 
 labels_for_prediction = {i: v for i, v in enumerate(actual_test_data["category_tag"].unique().tolist(), start=1)}
