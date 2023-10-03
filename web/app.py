@@ -20,9 +20,9 @@ async def main_page(request: Request):
 @app.post("/translate")
 async def translate_user_text(request: Request, uploaded_file: UploadFile = File(...)):
     """
-
-    :param request:
-    :param uploaded_file:
+    Translate user text
+    :param request: User request
+    :param uploaded_file: file with test to translate
     :return:
     """
     translation = await services.get_text_translation(uploaded_file.file.read())
@@ -32,10 +32,10 @@ async def translate_user_text(request: Request, uploaded_file: UploadFile = File
 @app.post("/get-recommendation")
 async def get_recommendation(request: Request, uploaded_file: UploadFile = File(...)):
     """
-
-    :param request:
-    :param uploaded_file:
-    :return:
+    Get recommended articles for user
+    :param request: User request
+    :param uploaded_file: file with text on which model will predict article category
+    :return: TemplateResponse
     """
     recommendations = await services.get_recommendations_from_content(uploaded_file.file.read())
     return templates.TemplateResponse("recommendations.html", {"request": request, "recommendations": recommendations})

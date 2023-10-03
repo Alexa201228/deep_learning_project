@@ -8,8 +8,8 @@ import dl_translator
 async def get_text_translation(file: bytes):
 
     """
-
-    :param file:
+    Method to translate user text from English to Russian
+    :param file: text file for translation in bytes
     :return:
     """
     text = file.decode()
@@ -19,15 +19,16 @@ async def get_text_translation(file: bytes):
     return translation
 
 
-async def get_recommendations_from_content(file):
+async def get_recommendations_from_content(file) -> dict:
 
     """
-
-    :param file:
-    :return:
+    Method to get recommendations for user based on uploaded file text
+    :param file: file with text on which model makes recommendations
+    :return: dict with articles' titles as keys and articles\ links
     """
     fresh_news = pd.read_csv("./../data/test/scitechdaily_test.csv")
     model_path = "./models/best_classification_model.pt"
+    # TODO: NOT WORKING!
     tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
     model = AutoModelForSequenceClassification.from_pretrained(model_path)
     inputs = tokenizer(file.decode(), padding=True, truncation=True, return_tensors="pt")

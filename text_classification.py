@@ -12,19 +12,26 @@ from classification_model_class import TextClassificationModel
 from utils import label_mapper, preprocess_data
 
 
+# Define constants for model sav path and data paths
 BEST_MODEL_PATH = "./models/best_classification_model.pt"
 TRAIN_DATA_PATH = "./data/train/scitechdaily.csv"
 TEST_DATA_PATH = "./data/test/scitechdaily_test.csv"
 
 
+# Select a device to run training and inference model
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-
+# Preprocess data
 preprocess_data(TRAIN_DATA_PATH)
 news_data = pd.read_csv(TRAIN_DATA_PATH)
 
 
 def collate_batch(batch):
+    """
+
+    :param batch:
+    :return:
+    """
     label_list, text_list, offsets = [], [], [0]
     for _label, _text in batch:
         label_list.append(label_pipeline(_label))
@@ -37,21 +44,26 @@ def collate_batch(batch):
     return label_list.to(device), text_list.to(device), offsets.to(device)
 
 
+# Split to train and test datasets
 train_data, test_data = train_test_split(news_data, test_size=0.2, random_state=42)
+
 
 # Define a function to create the (label, text) tuple
 def create_label_text_tuple(row):
     return row["category_tag"], row["article_content_preprocessed"]
+
 
 # Apply the function to create the tuples for each row
 train_data = train_data.apply(create_label_text_tuple, axis=1)
 test_data = test_data.apply(create_label_text_tuple, axis=1)
 
 
+# Load data with Dataloader
 dataloader = DataLoader(
     train_data.tolist(), batch_size=16, shuffle=False, collate_fn=collate_batch
 )
 
+# Create tokenizer
 tokenizer = get_tokenizer("basic_english")
 
 
@@ -60,15 +72,17 @@ def yield_tokens(data_iter):
         yield tokenizer(text)
 
 
+# Create a vocabulary
 vocab = build_vocab_from_iterator(yield_tokens(train_data), specials=["<unk>"])
 vocab.set_default_index(vocab["<unk>"])
 
 labels_dict = label_mapper(news_data["category_tag"].unique().tolist())
 
+# Make pipelines for text classification
 text_pipeline = lambda x: vocab(tokenizer(x))
 label_pipeline = lambda x: labels_dict.get(x, -1)
 
-
+# Create model
 num_class = len(news_data["category_tag"].unique())
 vocab_size = len(vocab)
 emsize = 64

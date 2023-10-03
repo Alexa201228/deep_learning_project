@@ -17,10 +17,31 @@
 pip install -r requirements.txt
 ```
 
-Для conda:
-```
-conda install --file requirements.txt.
-```
 ### Запуск проекта
 
-Для запуска веб интерфейса необходимо перейти в папку web и запустить
+Для запуска веб интерфейса необходимо перейти в папку web и запустить скрипт 
+run.py
+
+#### ВАЖНО!
+Для запуска веб интерфейса необходимо создать и активировать виртуальное 
+окружение:
+
+Создание окружения (.env - название папки для окружения):
+```
+python -m venv .env
+```
+
+##### Активация окружения
+
+Для Windows:
+```
+# In cmd.exe
+venv\Scripts\activate.bat
+# In PowerShell
+venv\Scripts\Activate.ps1
+```
+
+Для Linux/MacOS:
+```
+source myvenv/bin/activate
+```
