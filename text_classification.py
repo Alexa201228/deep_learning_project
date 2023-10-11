@@ -9,13 +9,8 @@ from sklearn.model_selection import train_test_split
 from torchtext.data.functional import to_map_style_dataset
 
 from classification_model_class import TextClassificationModel
+from constants import TRAIN_DATA_PATH, TEST_DATA_PATH, BEST_MODEL_PATH
 from utils import label_mapper, preprocess_data
-
-
-# Define constants for model sav path and data paths
-BEST_MODEL_PATH = "./models/best_classification_model.pt"
-TRAIN_DATA_PATH = "./data/train/scitechdaily.csv"
-TEST_DATA_PATH = "./data/test/scitechdaily_test.csv"
 
 
 # Select a device to run training and inference model

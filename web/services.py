@@ -3,6 +3,7 @@ import pandas as pd
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 import dl_translator
+from constants import NOTEBOOKS_TEST_DATA_PATH, BEST_MODEL_PATH
 
 
 async def get_text_translation(file: bytes):
@@ -13,9 +14,7 @@ async def get_text_translation(file: bytes):
     :return:
     """
     text = file.decode()
-    print(text)
     translation = dl_translator.translate(text)
-    print(translation)
     return translation
 
 
@@ -26,8 +25,8 @@ async def get_recommendations_from_content(file) -> dict:
     :param file: file with text on which model makes recommendations
     :return: dict with articles' titles as keys and articles\ links
     """
-    fresh_news = pd.read_csv("./../data/test/scitechdaily_test.csv")
-    model_path = "./models/best_classification_model.pt"
+    fresh_news = pd.read_csv(NOTEBOOKS_TEST_DATA_PATH)
+    model_path = BEST_MODEL_PATH
     # TODO: NOT WORKING!
     tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
     model = AutoModelForSequenceClassification.from_pretrained(model_path)

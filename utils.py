@@ -1,9 +1,9 @@
-import os
-
 import nltk
 import pandas as pd
 
 from nltk.corpus import stopwords
+
+from constants import TEST_TEXT_PATH
 
 
 def label_mapper(labels: list[str]):
@@ -43,5 +43,5 @@ def preprocess_data(path_to_data_csv: str):
 
 
 def save_test_text_to_txt(text: str):
-    with open("./test_text.txt", "w") as file:
+    with open(TEST_TEXT_PATH, "w") as file:
         file.write(text)

@@ -2,12 +2,14 @@ import pandas as pd
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
+from constants import TEST_DATA_PATH, BEST_MODEL_PATH
+
 if __name__ == "__main__":
-    test_df = pd.read_csv("./data/test/scitechdaily_test.csv")
+    test_df = pd.read_csv(TEST_DATA_PATH)
     random_test_text = test_df.sample(n=1)["article_content"].item()
 
     # TODO: this is not working! Find a way to load model and predict with torch
-    model_path = "./models/best_classification_model.pt"
+    model_path = BEST_MODEL_PATH
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     model = AutoModelForSequenceClassification.from_pretrained(model_path)
 
