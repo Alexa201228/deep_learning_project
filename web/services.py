@@ -1,9 +1,18 @@
 import torch
 import pandas as pd
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from torchtext.data import get_tokenizer
+from torchtext.vocab import build_vocab_from_iterator
 
 import dl_translator
 from constants import NOTEBOOKS_TEST_DATA_PATH, BEST_MODEL_PATH
+
+
+tokenizer = get_tokenizer("basic_english")
+
+
+def yield_tokens(data_iter):
+    for text in data_iter:
+        yield tokenizer(text)
 
 
 async def get_text_translation(file: bytes):
@@ -18,34 +27,34 @@ async def get_text_translation(file: bytes):
     return translation
 
 
-async def get_recommendations_from_content(file) -> dict:
+async def get_recommendations_from_content(file) -> tuple[dict, str]:
 
     """
     Method to get recommendations for user based on uploaded file text
     :param file: file with text on which model makes recommendations
-    :return: dict with articles' titles as keys and articles\ links
+    :return: dict with articles' titles as keys and articles' links
     """
-    fresh_news = pd.read_csv(NOTEBOOKS_TEST_DATA_PATH)
-    model_path = BEST_MODEL_PATH
-    # TODO: NOT WORKING!
-    tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
-    model = AutoModelForSequenceClassification.from_pretrained(model_path)
-    inputs = tokenizer(file.decode(), padding=True, truncation=True, return_tensors="pt")
+    fresh_news: pd.DataFrame = pd.read_csv(NOTEBOOKS_TEST_DATA_PATH)
+    labels_for_prediction = {i: v for i, v in enumerate(fresh_news["category_tag"].unique().tolist(), start=0)}
+
+    model = torch.jit.load(f"./.{BEST_MODEL_PATH}")
+    model.eval()
+
+    vocab = build_vocab_from_iterator(yield_tokens(file.decode()), specials=["<unk>"])
+    vocab.set_default_index(vocab["<unk>"])
+
+    text_pipeline = lambda x: vocab(tokenizer(x))
 
     with torch.no_grad():
-        outputs = model(**inputs)
+        text = torch.tensor(text_pipeline(file.decode()))
+        output = model(text, torch.tensor([0]))
 
-    logits = outputs.logits
-    predicted_class = torch.argmax(logits, dim=1).item()
-    print(fresh_news.info())
-    labels_for_prediction = {i: v for i, v in enumerate(fresh_news["category_tag"].unique().tolist(), start=0)}
-    print(labels_for_prediction)
+    predicted_class = output.argmax(1).item() + 1
+
     print("This is a %s news" % labels_for_prediction[predicted_class])
-
-    recommendations = {article["article_title"]: article["article_link"] for article
-                       in fresh_news[fresh_news["category_tag"] == labels_for_prediction[predicted_class]].loc[:10, :]}
-
-    return recommendations
+    recommendations_df = fresh_news[fresh_news["category_tag"] == labels_for_prediction[predicted_class]][:10]
+    recommendations = {article["article_title"]: article["article_link"] for _, article in recommendations_df.iterrows()}
+    return recommendations, labels_for_prediction[predicted_class]
 
 
 

@@ -2,10 +2,12 @@
 {% block title %}Рекомендации{% endblock %}
 {% block content %}
 <div style="justify-content: center; margin: 30px">
+<h3>Тема загруженного текста: {{ theme }}</h3>
     {% for recom, link in recommendations.items() %}
     <div style="display: flex; align-content: center;">
-        <p>{{ recom }}</p>
-        <p>{{ link }}</p>
+        <p>
+        <a href="{{ link }}">{{ recom }}</a>
+        </p>
     </div>
     {% endfor %}
 </div>

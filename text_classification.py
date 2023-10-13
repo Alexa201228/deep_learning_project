@@ -171,7 +171,8 @@ for epoch in range(1, EPOCHS + 1):
     train_accuracy = accu_val
     if train_accuracy > prev_accuracy:
         print(f"Found better model! With {accu_val=}")
-        torch.save(model.state_dict(), BEST_MODEL_PATH)
+        model_scripted = torch.jit.script(model)  # Export to TorchScript
+        model_scripted.save(BEST_MODEL_PATH)  # Save
         prev_accuracy = train_accuracy
 
     print("-" * 59)
@@ -198,8 +199,8 @@ actual_label = sample["category_tag"].item()
 
 labels_for_prediction = {i: v for i, v in enumerate(actual_test_data["category_tag"].unique().tolist(), start=1)}
 
-
-model.load_state_dict(torch.load(BEST_MODEL_PATH, map_location='cpu'))
+model = torch.jit.load(BEST_MODEL_PATH)
+model.eval()
 
 print(f"{labels_for_prediction}")
 print("This is a %s news" % labels_for_prediction[predict(ex_text_str, text_pipeline)])

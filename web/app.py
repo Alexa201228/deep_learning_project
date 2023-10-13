@@ -37,5 +37,6 @@ async def get_recommendation(request: Request, uploaded_file: UploadFile = File(
     :param uploaded_file: file with text on which model will predict article category
     :return: TemplateResponse
     """
-    recommendations = await services.get_recommendations_from_content(uploaded_file.file.read())
-    return templates.TemplateResponse("recommendations.html", {"request": request, "recommendations": recommendations})
+    recommendations, theme = await services.get_recommendations_from_content(uploaded_file.file.read())
+    return templates.TemplateResponse("recommendations.html", {"request": request, "recommendations": recommendations,
+                                                               "theme": theme})
