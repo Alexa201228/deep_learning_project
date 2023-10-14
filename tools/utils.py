@@ -3,7 +3,7 @@ import pandas as pd
 
 from nltk.corpus import stopwords
 
-from constants import TEST_TEXT_PATH
+from tools.constants import TEST_TEXT_PATH
 
 
 def label_mapper(labels: list[str]):

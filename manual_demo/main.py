@@ -4,7 +4,8 @@ from torchtext.data import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 
 
-from constants import TEST_DATA_PATH, BEST_MODEL_PATH
+from tools.constants import TEST_DATA_PATH, BEST_MODEL_PATH
+
 
 if __name__ == "__main__":
     test_df = pd.read_csv(TEST_DATA_PATH)
@@ -15,7 +16,7 @@ if __name__ == "__main__":
     labels_for_prediction = {i: v for i, v in enumerate(test_df["category_tag"].unique().tolist(), start=0)}
     tokenizer = get_tokenizer("basic_english")
 
-    model = torch.jit.load(f"./.{BEST_MODEL_PATH}")
+    model = torch.jit.load(BEST_MODEL_PATH)
     model.eval()
 
     def yield_tokens(data_iter):

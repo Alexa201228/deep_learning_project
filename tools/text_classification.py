@@ -8,9 +8,9 @@ from torch.utils.data import DataLoader, random_split
 from sklearn.model_selection import train_test_split
 from torchtext.data.functional import to_map_style_dataset
 
-from classification_model_class import TextClassificationModel
-from constants import TRAIN_DATA_PATH, TEST_DATA_PATH, BEST_MODEL_PATH
-from utils import label_mapper, preprocess_data
+from models.classification_model_class import TextClassificationModel
+from tools.constants import TRAIN_DATA_PATH, TEST_DATA_PATH, BEST_MODEL_PATH
+from tools.utils import label_mapper, preprocess_data
 
 
 # Select a device to run training and inference model
